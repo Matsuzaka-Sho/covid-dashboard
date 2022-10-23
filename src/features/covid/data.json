@@ -4,7 +4,7 @@
     "detail": "https://covid19.mathdro.id/api/confirmed"
   },
   "recovered": {
-    "value": 1000000,
+    "value": 0,
     "detail": "https://covid19.mathdro.id/api/recovered"
   },
   "deaths": {

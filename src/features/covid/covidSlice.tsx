@@ -100,7 +100,7 @@ export const fetchAsyncGetCountry = createAsyncThunk(
     async (country: string) => {
         let dynamicUrl = apiUrl;
         if (country) {
-            dynamicUrl = `${apiUrl}/countries/${country}`
+            dynamicUrl = `${apiUrl}countries/${country}`
         }
         const {data} = await axios.get<APIDATA>(dynamicUrl);
         return {data: data, country: country}
@@ -137,6 +137,7 @@ const covidSlice = createSlice({
     }
 })
 
+// stateのデータ属性取得して、returnしている。
 export const selectData = (state: RootState) => state.covid.data;
 export const selectDailyData = (state: RootState) => state.covid.dailyData;
 export const selectCountry = (state: RootState) => state.covid.country;
