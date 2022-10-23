@@ -37,7 +37,7 @@ const DashBoard: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchAsyncGet())
-        dispatch(fetchAsyncGetDaily)
+        dispatch(fetchAsyncGetDaily())
     }, [dispatch])
 
     return (
