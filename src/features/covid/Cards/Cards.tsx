@@ -8,10 +8,10 @@ import { MdLocalHospital } from "react-icons/md";
 import { AiFillLike } from "react-icons/ai";
 
 import { useSelector } from "react-redux";
-import { selectData } from "../covidSlice";
+import { selectDaily } from "../covidSlice";
 
 const Cards: React.FC = () => {
-    const data = useSelector(selectData);
+    const daily = useSelector(selectDaily);
 
     return (
         <div className={styles.container}>
@@ -26,7 +26,7 @@ const Cards: React.FC = () => {
                             <CountUp
                                 start={0}
                                 // 感染者を表示
-                                end={data.confirmed.value}
+                                end={daily[daily.length-1].Confirmed}
                                 duration={1.5}
                                 // 3桁ごとにカンマを入れてくれる
                                 separator=","
@@ -44,7 +44,7 @@ const Cards: React.FC = () => {
                             <CountUp
                                 start={0}
                                 // 感染者を表示
-                                end={data.recovered.value}
+                                end={daily[daily.length-1].Recovered}
                                 duration={1.5}
                                 // 3桁ごとにカンマを入れてくれる
                                 separator=","
@@ -62,7 +62,7 @@ const Cards: React.FC = () => {
                             <CountUp
                                 start={0}
                                 // 感染者を表示
-                                end={data.deaths.value}
+                                end={daily[daily.length-1].Deaths}
                                 duration={1.5}
                                 // 3桁ごとにカンマを入れてくれる
                                 separator=","

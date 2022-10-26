@@ -1,145 +1,46 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import {RootState} from "../../app/store";
-import dataJson from "./data.json"
-import dataJsonDaily from "./dataDaily.json"
+import { RootState } from "../../app/store";
+import dataDaily from "./apiDataDaily.json";
 
-const apiUrl = "https://covid19.mathdro.id/api/"
+const apiUrl = "https://api.covid19api.com/total/country";
 
-// dataJsonの型を自動で読み込み。
-export type APIDATA = typeof dataJson;
-export type APIDATADAILY = typeof dataJsonDaily;
+type DATADAILY = typeof dataDaily;
 
-export type covidState = {
-    data: APIDATA,
-    country: string,
-    dailyData: APIDATADAILY
-}
+type covidState = {
+  daily: DATADAILY;
+  country: string;
+};
 
 const initialState: covidState = {
-    data: {
-        "confirmed": {
-            "value": 627468642,
-            "detail": "https://covid19.mathdro.id/api/confirmed"
-        },
-        "recovered": {
-            "value": 0,
-            "detail": "https://covid19.mathdro.id/api/recovered"
-        },
-        "deaths": {
-            "value": 6577947,
-            "detail": "https://covid19.mathdro.id/api/deaths"
-        },
-        "dailySummary": "https://covid19.mathdro.id/api/daily",
-        "dailyTimeSeries": {
-            "pattern": "https://covid19.mathdro.id/api/daily/[dateString]",
-            "example": "https://covid19.mathdro.id/api/daily/2-14-2020"
-        },
-        "image": "https://covid19.mathdro.id/api/og",
-        "source": "https://github.com/mathdroid/covid19",
-        "countries": "https://covid19.mathdro.id/api/countries",
-        "countryDetail": {
-            "pattern": "https://covid19.mathdro.id/api/countries/[country]",
-            "example": "https://covid19.mathdro.id/api/countries/USA"
-        },
-        "lastUpdate": "2022-10-22T23:22:30.000Z"
-    },
-    country: "",
-    dailyData: [
-        {
-            "totalConfirmed": 557,
-            "mainlandChina": 548,
-            "otherLocations": 9,
-            "deltaConfirmed": 0,
-            "totalRecovered": 0,
-            "confirmed": {
-                "total": 557,
-                "china": 548,
-                "outsideChina": 9
-            },
-            "deltaConfirmedDetail": {
-                "total": 0,
-                "china": 0,
-                "outsideChina": 0
-            },
-            "deaths": {
-                "total": 17,
-                "china": 17,
-                "outsideChina": 0
-            },
-            "recovered": {
-                "total": 0,
-                "china": 0,
-                "outsideChina": 0
-            },
-            "active": 0,
-            "deltaRecovered": 0,
-            "incidentRate": 0.4510818002025252,
-            "peopleTested": 0,
-            "reportDate": "2020-01-22"
-        }
-    ],
-}
-
-export const fetchAsyncGet = createAsyncThunk(
-    "covid/get",
-    async () => {
-        const {data} = await axios.get<APIDATA>(apiUrl);
-        return data
-    })
+  daily: dataDaily,
+  country: "Japan",
+};
 
 export const fetchAsyncGetDaily = createAsyncThunk(
-    "covid/getDaily",
-    async () => {
-        const {data} = await axios.get<APIDATADAILY>(`${apiUrl}/daily`);
-        return data
-    })
-
-export const fetchAsyncGetCountry = createAsyncThunk(
-    "covid/getCountry",
-    async (country: string) => {
-        let dynamicUrl = apiUrl;
-        if (country) {
-            dynamicUrl = `${apiUrl}countries/${country}`
-        }
-        const {data} = await axios.get<APIDATA>(dynamicUrl);
-        return {data: data, country: country}
-    })
-
+  "covid/getDaily",
+  async (country: string) => {
+    const { data } = await axios.get<DATADAILY>(`${apiUrl}/${country}`);
+    return { data: data, country: country };
+  }
+);
 
 const covidSlice = createSlice({
-    name: "covid",
-    initialState: initialState,
-    reducers: {},
-    // 後処理を書く。上で定義したcreateAsyncThunkの数だけ書く必要がある？
-    extraReducers: (builder) => {
-        // fullfiledは処理が正常終了した場合に、どのような処理を行うかを書く
-        builder.addCase(fetchAsyncGet.fulfilled, (state, action) => {
-            return {
-                ...state,
-                data: action.payload,
-            }
-        });
-        builder.addCase(fetchAsyncGetDaily.fulfilled, (state, action) => {
-            return {
-                ...state,
-                dailyData: action.payload,
-            }
-        });
-        builder.addCase(fetchAsyncGetCountry.fulfilled, (state, action) => {
-            return {
-                ...state,
-                // return {data: data, country: country}とオブジェクトの形で返しているので、action.payload...とする。
-                data: action.payload.data,
-                country: action.payload.country,
-            }
-        });
-    }
-})
+  name: "covid",
+  initialState: initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(fetchAsyncGetDaily.fulfilled, (state, action) => {
+      return {
+        ...state,
+        daily: action.payload.data,
+        country: action.payload.country,
+      };
+    });
+  },
+});
 
-// stateのデータ属性取得して、returnしている。
-export const selectData = (state: RootState) => state.covid.data;
-export const selectDailyData = (state: RootState) => state.covid.dailyData;
+export const selectDaily = (state: RootState) => state.covid.daily;
 export const selectCountry = (state: RootState) => state.covid.country;
 
 export default covidSlice.reducer;

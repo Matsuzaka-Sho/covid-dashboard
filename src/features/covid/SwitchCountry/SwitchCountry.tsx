@@ -2,8 +2,8 @@ import React from 'react';
 import {makeStyles} from "@material-ui/core";
 // NativeSelectはモバイルにも対応？
 import {NativeSelect, FormControl} from "@material-ui/core";
-import { useAppDispatch } from "../../../app/hooks";
-import {fetchAsyncGetCountry} from "../covidSlice";
+import {useAppDispatch} from "../../../app/hooks";
+import {fetchAsyncGetDaily} from "../covidSlice";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -39,10 +39,9 @@ const SwitchCountry: React.FC = () => {
         <FormControl className={classes.formControl}>
             <NativeSelect
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    dispatch(fetchAsyncGetCountry(e.target.value))
+                    dispatch(fetchAsyncGetDaily(e.target.value))
                 }
             >
-                <option value="">Worldwide</option>
                 {countries.map((country, i) => (
                     <option key={i} value={country}>
                         {country}

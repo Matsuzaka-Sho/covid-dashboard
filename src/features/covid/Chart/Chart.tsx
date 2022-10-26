@@ -2,53 +2,27 @@ import React from 'react';
 import styles from './Chart.module.css';
 import {Line, Bar} from 'react-chartjs-2'
 import {useSelector} from "react-redux";
-import {selectData, selectDailyData, selectCountry} from "../covidSlice";
+import {selectDaily, selectCountry} from "../covidSlice";
 
 const Chart: React.FC = () => {
-    const data = useSelector(selectData);
-    const dailyData = useSelector(selectDailyData);
+    const daily = useSelector(selectDaily);
+    const dates = daily.map(({Date}) => Date);
     const country = useSelector(selectCountry);
 
     // data && ()はdataが存在するときに()の中身を実行する。
-    const barChart = data && (
-        <Bar
-            data={{
-                labels: ["Infected", "Recovered", "Deaths"],
-                datasets: [
-                    {
-                        backgroundColor: [
-                            "rgba(0, 0, 255, 0.5)",
-                            "#008080",
-                            "rgba(255, 0, 0, 0.5)",
-                        ],
-                        data: [
-                            data.confirmed.value,
-                            data.recovered.value,
-                            data.deaths.value,
-                        ],
-                    },
-                ],
-            }}
-            options={{
-                legend: {display: false},
-                title: {display: true, text: `Latest status in ${country}`},
-            }}
-        />
-    );
-
-    const lineChart = dailyData[0] && (
+    const lineChart = daily[0] && (
         <Line
             data={{
-                labels: dailyData.map(({reportDate}) => reportDate),
+                labels: dates.map((date) => new Date(date).toDateString()),
                 datasets: [
                     {
-                        data: dailyData.map((data) => data.confirmed.total),
+                        data: daily.map((data) => data.Confirmed),
                         label: "Infected",
                         borderColor: "#3333ff",
                         fill: true,
                     },
                     {
-                        data: dailyData.map((data) => data.deaths.total),
+                        data: daily.map((data) => data.Deaths),
                         label: "Deaths",
                         borderColor: "#ff3370",
                         fill: true,
@@ -59,8 +33,8 @@ const Chart: React.FC = () => {
     );
 
     return (
-        <div>
-            {country.length ? barChart: lineChart}
+        <div className={styles.container}>
+            {lineChart}
         </div>
     );
 };

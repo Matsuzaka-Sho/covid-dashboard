@@ -3,23 +3,23 @@ import {Typography} from "@material-ui/core";
 import {Doughnut} from "react-chartjs-2";
 
 import {useSelector} from "react-redux";
-import {selectData} from "../covidSlice";
+import {selectDaily} from "../covidSlice";
 
 const PieChart: React.FC = () => {
-    const data = useSelector(selectData);
+    const daily = useSelector(selectDaily);
     const motality =
-        data.confirmed && (100 * data.deaths.value) / data.confirmed.value;
+        (100 * daily[daily.length - 1].Deaths) / daily[daily.length - 1].Confirmed;
 
-    const pieChart = data && (
+    const pieChart =
         <Doughnut
             data={{
                 labels: ["Infected", "Recovered", "Deaths"],
                 datasets: [
                     {
                         data: [
-                            data.confirmed.value,
-                            data.recovered.value,
-                            data.deaths.value,
+                            daily[daily.length - 1].Confirmed,
+                            daily[daily.length - 1].Recovered,
+                            daily[daily.length - 1].Deaths,
                         ],
                         backgroundColor: [
                             "rgba(0, 0, 255, 0.5)",
@@ -39,16 +39,13 @@ const PieChart: React.FC = () => {
                     },
                 },
             }}
-        />
-    );
+        />;
 
     return (
         <>
-            {data.confirmed && (
-                <Typography align="center" color="textPrimary" gutterBottom>
-                    Motarity {data.confirmed && motality.toFixed(2)} [%]
-                </Typography>
-            )}
+            <Typography align="center" color="textPrimary" gutterBottom>
+                Motarity {motality.toFixed(2)} [%]
+            </Typography>
             {pieChart}
         </>
     );
